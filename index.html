@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NiM × SEAL — Bill Monitoring Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logos">
+    <img class="logo-nim" src="data:image/jpeg;base64,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" alt="NiM Express">
+    <div class="logo-sep"></div>
+    <img class="logo-seal" src="data:image/png;base64,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" alt="SEAL Cold Chain">
+  </div>
+  <div class="hdr-center">
+    <div class="hdr-title"><i class="fa-solid fa-chart-gantt"></i>Bill Flow Monitor</div>
+    <div class="hdr-subtitle">ระบบติดตามสถานะบิล</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-date"><i class="fa-regular fa-calendar-days"></i>ข้อมูลบิล 07/05/2569 – 22/05/2569</div>
+    <div class="hdr-date"><i class="fa-regular fa-clock"></i><span id="hdr-date">—</span></div>
+    <div class="hdr-nss"><i class="fa-solid fa-server"></i>สถานะบิลดึงรายงาน NSS 08:00 น. วันที่ 23/05/2569</div>
+  </div>
+</header>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" data-short="ภาพรวม" onclick="switchTab('overview',this)"><i class="fa-solid fa-chart-pie"></i><span class="tab-label">ภาพรวม</span></button>
+  <button class="tab-btn" data-short="บิลทั้งหมด" onclick="switchTab('bills',this)"><i class="fa-solid fa-table-list"></i><span class="tab-label">รายการบิล</span></button>
+  <button class="tab-btn" data-short="รายบิล" onclick="switchTab('billdetail',this);initBillDetail()"><i class="fa-solid fa-receipt"></i><span class="tab-label">รายบิล</span></button>
+  <button class="tab-btn" data-short="งานกระจาย" onclick="switchTab('distmgmt',this);initDistMgmt()"><i class="fa-solid fa-map-location-dot"></i><span class="tab-label">งานกระจาย</span></button>
+  <button class="tab-btn" data-short="นำกลับ" onclick="switchTab('returns',this)"><i class="fa-solid fa-file-arrow-left"></i><span class="tab-label">นำกลับ</span></button>
+  <button class="tab-btn" data-short="Ranking" onclick="switchTab('ranking',this);renderRanking()"><i class="fa-solid fa-ranking-star"></i><span class="tab-label">Ranking</span></button>
+  <button class="tab-btn" data-short="คู่มือ" onclick="switchTab('guide',this)"><i class="fa-solid fa-circle-question"></i><span class="tab-label">คู่มือ</span></button>
+</nav>
+
+<div class="main">
+
+<!-- TAB: ภาพรวม -->
+<div id="tab-overview" class="tab-panel active">
+  <!-- hidden compat elements -->
+  <div id="h-total" style="display:none">0</div>
+  <div id="h-refdate" style="display:none"></div>
+  <div id="h-over" style="display:none">0</div>
+  <div id="h-slow" style="display:none">0</div>
+  <div id="h-ok" style="display:none">0</div>
+  <div id="h-bar" style="display:none"></div>
+  <div id="s-total" style="display:none">0</div>
+  <div id="s-total-sub" style="display:none"></div>
+  <div id="s-ok" style="display:none">0</div>
+  <div id="s-ok-sub" style="display:none"></div>
+  <div id="s-risk" style="display:none">0</div>
+  <div id="s-risk-sub" style="display:none"></div>
+  <div id="s-crit" style="display:none">0</div>
+  <div id="s-crit-sub" style="display:none"></div>
+  <div id="s-avg" style="display:none">0</div>
+  <div id="s-avg-sub" style="display:none"></div>
+  <div id="pg-dry-total" style="display:none">0</div>
+  <div id="pg-cold-total" style="display:none">0</div>
+  <div id="rc-dry-ok" style="display:none">0</div>
+  <div id="rc-dry-warn" style="display:none">0</div>
+  <div id="rc-dry-urge" style="display:none">0</div>
+  <div id="rc-dry-crit" style="display:none">0</div>
+  <div id="rc-cold-ok" style="display:none">0</div>
+  <div id="rc-cold-warn" style="display:none">0</div>
+  <div id="rc-cold-urge" style="display:none">0</div>
+  <div id="rc-cold-crit" style="display:none">0</div>
+  <div id="pc-dry-trans" style="display:none">0</div>
+  <div id="pc-dry-dist" style="display:none">0</div>
+  <div id="pc-dry-admin" style="display:none">0</div>
+  <div id="pc-cold-trans" style="display:none">0</div>
+  <div id="pc-cold-dist" style="display:none">0</div>
+  <div id="pc-cold-admin" style="display:none">0</div>
+
+  <!-- ── Filter bar สไตล์หน้ารายการบิล ── -->
+  <div class="seg-group" style="margin-top:10px;margin-bottom:14px">
+    <!-- Row 1: กลุ่มสินค้า -->
+    <div class="seg-row">
+      <span class="seg-label"><i class="fa-solid fa-cubes-stacked" style="color:var(--teal);margin-right:4px"></i>กลุ่มสินค้า</span>
+      <div class="seg-tabs" id="ov-seg-type">
+        <button class="seg-btn active" data-val="" onclick="setOvTypeSeg('',this)">
+          <i class="fa-solid fa-layer-group" style="font-size:10px;margin-right:4px"></i>สินค้ารวม
+        </button>
+        <button class="seg-btn" data-val="สินค้าทั่วไป" onclick="setOvTypeSeg('สินค้าทั่วไป',this)">
+          <i class="fa-solid fa-cubes" style="font-size:10px;margin-right:4px;color:#f0a500"></i>สินค้าทั่วไป
+        </button>
+        <button class="seg-btn" data-val="สินค้า Coldchain" onclick="setOvTypeSeg('สินค้า Coldchain',this)">
+          <i class="fa-solid fa-snowflake" style="font-size:10px;margin-right:4px;color:#006BB6"></i>สินค้าคุมอุณหภูมิ
+        </button>
+      </div>
+    </div>
+    <!-- Row 2: ประเภทปัญหา -->
+    <div class="seg-row">
+      <span class="seg-label"><i class="fa-solid fa-triangle-exclamation" style="color:var(--teal);margin-right:4px"></i>ประเภทปัญหา</span>
+      <div class="seg-tabs" id="ov-seg-prob">
+        <button class="seg-btn active" data-val="" onclick="setOvProbSeg('',this)">ทั้งหมด</button>
+        <button class="seg-btn" data-val="สถานะบิลคงค้างขนย้าย" onclick="setOvProbSeg('สถานะบิลคงค้างขนย้าย',this)">
+          <i class="fa-solid fa-truck-arrow-right" style="font-size:10px;margin-right:3px;color:#c85000"></i>คงค้างขนย้าย
+        </button>
+        <button class="seg-btn" data-val="สถานะบิลคงค้างกระจาย" onclick="setOvProbSeg('สถานะบิลคงค้างกระจาย',this)">
+          <i class="fa-solid fa-diagram-project" style="font-size:10px;margin-right:3px;color:#2b55b8"></i>คงค้างกระจาย
+        </button>
+        <button class="seg-btn" data-val="สถานะบิลคงค้างDC แผนกธุรการสาขา" onclick="setOvProbSeg('สถานะบิลคงค้างDC แผนกธุรการสาขา',this)">
+          <i class="fa-solid fa-pen-to-square" style="font-size:10px;margin-right:3px;color:#6b2bb8"></i>ธุรการสาขา
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6-Card Summary Block (v9) ── -->
+  <div class="six-summary" id="six-summary-block">
+    <div class="six-row-top">
+      <div class="sc6 sc6-total sc6-large" id="sc6-total">
+        <div class="sc6-head"><div class="sc6-ico"><i class="fa-solid fa-layer-group"></i></div><span class="sc6-lbl">บิลรวม</span></div>
+        <div class="sc6-num" id="sc6n-total">—</div>
+        <div class="sc6-pills">
+          <span class="sc6-pill sc6-pill-ab"><i class="fa-solid fa-cubes" style="font-size:8px"></i>AB <span id="sc6p-dry-total">—</span></span>
+          <span class="sc6-pill sc6-pill-cc"><i class="fa-solid fa-snowflake" style="font-size:8px"></i>CC <span id="sc6p-cold-total">—</span></span>
+        </div>
+        <div class="sc6-pct-row"><div class="sc6-pct-bar-wrap"><div class="sc6-pct-bar" id="sc6b-total" style="width:100%"></div></div><span class="sc6-pct-txt">100%</span></div>
+      </div>
+      <div class="sc6 sc6-crit" id="sc6-crit" >
+        <div class="sc6-head"><div class="sc6-ico"><i class="fa-solid fa-bolt"></i></div><span class="sc6-lbl">วิกฤต</span></div>
+        <div class="sc6-num" id="sc6n-crit">—</div>
+        <div class="sc6-pills">
+          <span class="sc6-pill sc6-pill-ab">AB <span id="sc6p-dry-crit">—</span></span>
+          <span class="sc6-pill sc6-pill-cc">CC <span id="sc6p-cold-crit">—</span></span>
+        </div>
+        <div class="sc6-pct-row"><div class="sc6-pct-bar-wrap"><div class="sc6-pct-bar" id="sc6b-crit" style="width:0%"></div></div><span class="sc6-pct-txt" id="sc6t-crit">—</span></div>
+      </div>
+      <div class="sc6 sc6-urge" id="sc6-urge" >
+        <div class="sc6-head"><div class="sc6-ico"><i class="fa-solid fa-triangle-exclamation"></i></div><span class="sc6-lbl">ต้องเร่งจัดการ</span></div>
+        <div class="sc6-num" id="sc6n-urge">—</div>
+        <div class="sc6-pills">
+          <span class="sc6-pill sc6-pill-ab">AB <span id="sc6p-dry-urge">—</span></span>
+          <span class="sc6-pill sc6-pill-cc">CC <span id="sc6p-cold-urge">—</span></span>
+        </div>
+        <div class="sc6-pct-row"><div class="sc6-pct-bar-wrap"><div class="sc6-pct-bar" id="sc6b-urge" style="width:0%"></div></div><span class="sc6-pct-txt" id="sc6t-urge">—</span></div>
+      </div>
+    </div>
+    <div class="six-row-bot">
+      <div class="sc6 sc6-warn" id="sc6-warn" >
+        <div class="sc6-head"><div class="sc6-ico"><i class="fa-solid fa-circle-exclamation"></i></div><span class="sc6-lbl">เริ่มเสี่ยง</span></div>
+        <div class="sc6-num" id="sc6n-warn">—</div>
+        <div class="sc6-pills">
+          <span class="sc6-pill sc6-pill-ab">AB <span id="sc6p-dry-warn">—</span></span>
+          <span class="sc6-pill sc6-pill-cc">CC <span id="sc6p-cold-warn">—</span></span>
+        </div>
+        <div class="sc6-pct-row"><div class="sc6-pct-bar-wrap"><div class="sc6-pct-bar" id="sc6b-warn" style="width:0%"></div></div><span class="sc6-pct-txt" id="sc6t-warn">—</span></div>
+      </div>
+      <div class="sc6 sc6-clear" id="sc6-clear" >
+        <div class="sc6-head"><div class="sc6-ico"><i class="fa-solid fa-flag-checkered"></i></div><span class="sc6-lbl">กลุ่ม Clear</span></div>
+        <div class="sc6-num" id="sc6n-clear">—</div>
+        <div class="sc6-pills">
+          <span class="sc6-pill sc6-pill-ab">AB <span id="sc6p-dry-clear">—</span></span>
+          <span class="sc6-pill sc6-pill-cc">CC <span id="sc6p-cold-clear">—</span></span>
+        </div>
+        <div class="sc6-pct-row"><div class="sc6-pct-bar-wrap"><div class="sc6-pct-bar" id="sc6b-clear" style="width:0%"></div></div><span class="sc6-pct-txt" id="sc6t-clear">—</span></div>
+        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mid)"><span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block"></span>ปกติ (1–5 วัน)</span>
+            <span style="font-size:12px;font-weight:700;color:var(--dark)" id="sc6n-clear-ok">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mid)"><span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block"></span>ต้องเร่งจัดการ (6–7 วัน)</span>
+            <span style="font-size:12px;font-weight:700;color:var(--dark)" id="sc6n-clear-urge">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mid)"><span style="width:7px;height:7px;border-radius:50%;background:#7a0000;display:inline-block"></span>วิกฤต (8+ วัน)</span>
+            <span style="font-size:12px;font-weight:700;color:var(--dark)" id="sc6n-clear-crit">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="sc6 sc6-ok" id="sc6-ok" >
+        <div class="sc6-head"><div class="sc6-ico"><i class="fa-solid fa-circle-check"></i></div><span class="sc6-lbl">ปกติ</span></div>
+        <div class="sc6-num" id="sc6n-ok">—</div>
+        <div class="sc6-pills">
+          <span class="sc6-pill sc6-pill-ab">AB <span id="sc6p-dry-ok">—</span></span>
+          <span class="sc6-pill sc6-pill-cc">CC <span id="sc6p-cold-ok">—</span></span>
+        </div>
+        <div class="sc6-pct-row"><div class="sc6-pct-bar-wrap"><div class="sc6-pct-bar" id="sc6b-ok" style="width:0%"></div></div><span class="sc6-pct-txt" id="sc6t-ok">—</span></div>
+      </div>
+    </div>
+  </div>
+  <!-- ── end 6-Card Summary Block ── -->
+
+  <div class="sec-hdr">
+    <div class="sec-title"><i class="fa-solid fa-location-dot"></i>สรุปปัญหาตาม DC <span style="font-weight:400;font-size:12px;color:var(--mid)" id="dc-overview-sub"></span></div>
+    <div style="display:flex;gap:4px">
+      <button class="seg-btn active" id="dc-sort-count" onclick="setDCSort('count',this)" style="padding:4px 12px;font-size:11px"><i class="fa-solid fa-bars-staggered" style="margin-right:4px;font-size:10px"></i>บิลความเสี่ยงสูง</button>
+      <button class="seg-btn" id="dc-sort-age" onclick="setDCSort('age',this)" style="padding:4px 12px;font-size:11px"><i class="fa-solid fa-hourglass-end" style="margin-right:4px;font-size:10px"></i>อายุบิลนานสุด</button>
+    </div>
+  </div>
+  <div class="dc-wrap">
+    <div id="dc-overview-grid" class="dc-grid"></div>
+  </div>
+</div>
+
+<!-- TAB: รายการบิล -->
+<div id="tab-bills" class="tab-panel">
+  <div class="seg-group" style="margin-top:10px">
+    <!-- Row 1: ประเภทสินค้า -->
+    <div class="seg-row">
+      <span class="seg-label"><i class="fa-solid fa-cubes-stacked" style="color:var(--teal);margin-right:4px"></i>สินค้า</span>
+      <div class="seg-tabs" id="seg-type">
+        <button class="seg-btn active" data-val="" onclick="setSeg('type','',this)"><i class="fa-solid fa-layer-group" style="font-size:10px;margin-right:4px"></i>สินค้ารวม</button>
+        <button class="seg-btn" data-val="สินค้าทั่วไป" onclick="setSeg('type','สินค้าทั่วไป',this)"><i class="fa-solid fa-cubes" style="font-size:10px;margin-right:4px;color:#f0a500"></i>สินค้าทั่วไป</button>
+        <button class="seg-btn" data-val="สินค้า Coldchain" onclick="setSeg('type','สินค้า Coldchain',this)"><i class="fa-solid fa-snowflake" style="font-size:10px;margin-right:4px;color:#006BB6"></i>สินค้าคุมอุณหภูมิ</button>
+      </div>
+    </div>
+    <!-- Row 2: ประเภทปัญหา -->
+    <div class="seg-row">
+      <span class="seg-label"><i class="fa-solid fa-triangle-exclamation" style="color:var(--teal);margin-right:4px"></i>ประเภทปัญหา</span>
+      <div class="seg-tabs" id="seg-prob">
+        <button class="seg-btn active" data-val="" onclick="setSeg('prob','',this)">ทั้งหมด</button>
+        <button class="seg-btn" data-val="สถานะบิลคงค้างขนย้าย" onclick="setSeg('prob','สถานะบิลคงค้างขนย้าย',this)">คงค้างขนย้าย</button>
+        <button class="seg-btn" data-val="สถานะบิลคงค้างกระจาย" onclick="setSeg('prob','สถานะบิลคงค้างกระจาย',this)">คงค้างกระจาย</button>
+        <button class="seg-btn" data-val="สถานะบิลคงค้างDC แผนกธุรการสาขา" onclick="setSeg('prob','สถานะบิลคงค้างDC แผนกธุรการสาขา',this)">ธุรการสาขา</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dropdown row -->
+  <div class="filter-row">
+    <select class="fsel" id="f-age" onchange="renderBills()" style="display:none">
+      <option value="">สถานะอายุทั้งหมด</option>
+      <option value="เกิน KPI">เกิน KPI</option>
+      <option value="เริ่มช้า">เริ่มช้า</option>
+      <option value="ปกติ">ปกติ</option>
+    </select>
+    <select class="fsel" id="f-dcstatus" onchange="renderBills()" style="display:none">
+      <option value="">สถานะของ DC ทั้งหมด</option>
+      <option value="DC ปัจจุบัน">DC ปัจจุบัน</option>
+      <option value="DC ปลายทาง">DC ปลายทาง</option>
+    </select>
+    <select class="fsel" id="f-dc" onchange="renderBills()">
+      <option value="">DC ทั้งหมด</option>
+    </select>
+    <input class="fsearch" id="f-search" oninput="renderBills()" style="display:none">
+    <span class="fcount" id="f-count"></span>
+    <button onclick="exportExcel()" style="margin-left:auto;display:flex;align-items:center;gap:6px;padding:0 14px;height:36px;background:#22a663;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;box-shadow:0 2px 6px rgba(34,166,99,.25);transition:background .18s" onmouseover="this.style.background='#1a8f54'" onmouseout="this.style.background='#22a663'"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+  </div>
+
+  <!-- Desktop table -->
+  <div class="tbl-wrap">
+    <div class="tbl-inner">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th onclick="sortBy('no')">เลขที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortBy('dateStr')">วันที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortBy('dcFocus')">DC (โฟกัส) <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortBy('dcGroupRef')">สถานะของ DC <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th>สถานะบิล</th>
+            <th onclick="sortBy('type')">ประเภท <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortBy('sla')">SLA <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortBy('age')">อายุบิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th>ระดับความเสี่ยง</th>
+            <th>ประเภทปัญหา</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <!-- Mobile cards -->
+  <div class="mob-cards" id="mob-cards"></div>
+</div>
+
+
+<!-- TAB: ข้อมูลรายบิล -->
+<div id="tab-billdetail" class="tab-panel">
+  <!-- Summary cards -->
+  <div class="bd-sum-row">
+    <div class="sum-card s-total">
+      <div class="sum-icon"><i class="fa-solid fa-receipt"></i></div>
+      <div class="sum-num teal" id="bd-stat-total">-</div>
+      <div class="sum-lbl">บิลทั้งหมด</div>
+      <div class="sum-sub">ที่กรองอยู่</div>
+    </div>
+    <div class="sum-card s-ok">
+      <div class="sum-icon"><i class="fa-solid fa-cubes"></i></div>
+      <div class="sum-num green" id="bd-stat-success">-</div>
+      <div class="sum-lbl">สินค้าทั่วไป</div>
+      <div class="sum-sub">บิลประเภทสินค้าทั่วไป</div>
+    </div>
+    <div class="sum-card s-risk">
+      <div class="sum-icon"><i class="fa-solid fa-snowflake"></i></div>
+      <div class="sum-num yellow" id="bd-stat-transit">-</div>
+      <div class="sum-lbl">สินค้า Coldchain</div>
+      <div class="sum-sub">บิลประเภทคุมอุณหภูมิ</div>
+    </div>
+  </div>
+
+  <!-- Filter row -->
+  <div class="filter-row-wrap">
+    <select class="fsel" id="bd-f-dc" onchange="renderBillDetail()">
+      <option value="">DC ปลายทาง ทั้งหมด</option>
+    </select>
+    <select class="fsel" id="bd-f-status" onchange="renderBillDetail()">
+      <option value="">สถานะบิล ทั้งหมด</option>
+    </select>
+    <select class="fsel" id="bd-f-type" onchange="renderBillDetail()">
+      <option value="">ประเภทบิล ทั้งหมด</option>
+    </select>
+    <input class="fsearch" id="bd-f-search" placeholder="ค้นหาเลขบิล / ชื่อผู้รับ..." oninput="renderBillDetail()">
+    <span class="fcount" id="bd-f-count"></span>
+    <button class="btn-export" onclick="exportBillDetailCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+  </div>
+
+  <!-- Desktop table -->
+  <div class="tbl-wrap">
+    <div class="tbl-inner">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th onclick="bdSortBy('เลขที่บิล')">เลขที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('วันที่บิล')">วันที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th>ชื่อผู้รับ</th>
+            <th onclick="bdSortBy('ตำบล')">ตำบล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('อำเภอ')">อำเภอ <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('จังหวัด')">จังหวัด <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('DC ต้นทาง')">DC ต้นทาง <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('DC ปลายทาง')">DC ปลายทาง <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('DC ปัจจุบัน')">DC ปัจจุบัน <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th>สถานะบิล</th>
+            <th onclick="bdSortBy('จำนวน')" class="num-th">จำนวน <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('COD')" class="num-th">COD (฿) <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('ประเภทบิล')">ประเภทบิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="bdSortBy('กำหนดส่ง (SLA)')">กำหนดส่ง (SLA) <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+          </tr>
+        </thead>
+        <tbody id="bd-tbl-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="bd-pagination"></div>
+  </div>
+
+  <!-- Mobile cards -->
+  <div class="mob-cards" id="bd-mob-cards"></div>
+</div>
+
+
+<!-- TAB: การจัดการงานกระจาย -->
+<div id="tab-distmgmt" class="tab-panel">
+
+  <!-- Summary cards -->
+  <div class="sum-row" style="margin-top:10px">
+    <div class="sum-card s-total" style="cursor:default" onclick="dmSetProb('',this)">
+      <div class="sum-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+      <div class="sum-num teal" id="dm-stat-total">-</div>
+      <div class="sum-lbl">บิลคงค้างกระจาย</div>
+      <div class="sum-sub">ทั้งหมด (คลิกเพื่อล้าง filter)</div>
+    </div>
+    <div class="sum-card s-risk" onclick="dmSetProb('รอกระจาย',this)" style="cursor:pointer">
+      <div class="sum-icon"><i class="fa-solid fa-clock"></i></div>
+      <div class="sum-num yellow" id="dm-stat-wait">-</div>
+      <div class="sum-lbl">รอกระจาย (031)</div>
+      <div class="sum-sub">คลิกเพื่อกรอง</div>
+    </div>
+    <div class="sum-card s-crit" onclick="dmSetProb('ส่งไม่ได้',this)" style="cursor:pointer">
+      <div class="sum-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="sum-num red" id="dm-stat-fail">-</div>
+      <div class="sum-lbl">ส่งไม่ได้ (051)</div>
+      <div class="sum-sub">คลิกเพื่อกรอง</div>
+    </div>
+    <div class="sum-card s-ok" onclick="dmSetProb('รอส่งกลับ',this)" style="cursor:pointer">
+      <div class="sum-icon"><i class="fa-solid fa-rotate-left"></i></div>
+      <div class="sum-num green" id="dm-stat-ret">-</div>
+      <div class="sum-lbl">รอส่งกลับ (05199)</div>
+      <div class="sum-sub">คลิกเพื่อกรอง</div>
+    </div>
+  </div>
+
+  <!-- Filter row -->
+  <div class="filter-row-wrap">
+    <select class="fsel" id="dm-f-dc" onchange="dmRender()">
+      <option value="">DC ปลายทาง ทั้งหมด</option>
+    </select>
+    <select class="fsel" id="dm-f-prob" onchange="dmRender()">
+      <option value="">ประเภทปัญหา ทั้งหมด</option>
+      <option value="รอกระจาย">รอกระจาย</option>
+      <option value="ส่งไม่ได้ครั้งที่ 1">ส่งไม่ได้ครั้งที่ 1</option>
+      <option value="ส่งไม่ได้ครั้งที่ 2">ส่งไม่ได้ครั้งที่ 2</option>
+      <option value="ส่งไม่ได้ครั้งที่ 3+">ส่งไม่ได้ครั้งที่ 3+</option>
+      <option value="รอส่งกลับ">รอส่งกลับ</option>
+    </select>
+    <select class="fsel" id="dm-f-type" onchange="dmRender()">
+      <option value="">ประเภทสินค้า ทั้งหมด</option>
+      <option value="สินค้าทั่วไป">สินค้าทั่วไป</option>
+      <option value="สินค้า Coldchain">สินค้า Coldchain</option>
+    </select>
+    <input class="fsearch" id="dm-f-search" placeholder="ค้นหาเลขบิล / ชื่อผู้รับ / ตำบล / อำเภอ..." oninput="dmRender()">
+    <span class="fcount" id="dm-f-count"></span>
+    <button class="btn-export" onclick="dmExportCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+  </div>
+
+  <!-- View toggle -->
+  <div class="dm-view-bar">
+    <span style="font-size:11px;font-weight:700;color:var(--mid)">มุมมอง</span>
+    <div class="dm-view-btns">
+      <button id="dm-view-dc" class="dm-view-btn active" onclick="dmSetView('dc')"><i class="fa-solid fa-warehouse"></i> แยกตาม DC</button>
+      <button id="dm-view-area" class="dm-view-btn" onclick="dmSetView('area')"><i class="fa-solid fa-map-pin"></i> แยกตามพื้นที่</button>
+      <button id="dm-view-bill" class="dm-view-btn" onclick="dmSetView('bill')"><i class="fa-solid fa-list"></i> รายการบิล</button>
+    </div>
+  </div>
+
+  <!-- VIEW: DC summary -->
+  <div id="dm-panel-dc">
+    <!-- Desktop table -->
+    <div class="tbl-wrap">
+      <div class="tbl-inner">
+        <table class="tbl">
+          <thead><tr>
+            <th onclick="dmDCSortBy('dc')">DC ปลายทาง <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmDCSortBy('total')" style="text-align:right">รวม <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmDCSortBy('wait')" style="text-align:right">รอกระจาย <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmDCSortBy('fail1')" style="text-align:right">ส่งไม่ได้ ครั้ง 1 <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmDCSortBy('fail2')" style="text-align:right">ครั้ง 2 <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmDCSortBy('fail3')" style="text-align:right">ครั้ง 3+ <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmDCSortBy('ret')" style="text-align:right">รอส่งกลับ <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th style="text-align:center">ระดับ</th>
+            <th style="text-align:center">ดูพื้นที่</th>
+          </tr></thead>
+          <tbody id="dm-dc-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Mobile cards -->
+    <div class="dm-mob-summary" id="dm-dc-mob"></div>
+  </div>
+
+  <!-- VIEW: Area summary -->
+  <div id="dm-panel-area" style="display:none">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:12px;font-weight:700;color:var(--mid)">จัดกลุ่มตาม</span>
+      <div class="dm-grp-btns">
+        <button id="dm-grp-tambon" class="dm-grp-btn active" onclick="dmSetGrp('ตำบล')">ตำบล</button>
+        <button id="dm-grp-amphoe" class="dm-grp-btn" onclick="dmSetGrp('อำเภอ')">อำเภอ</button>
+        <button id="dm-grp-province" class="dm-grp-btn" onclick="dmSetGrp('จังหวัด')">จังหวัด</button>
+      </div>
+      <span id="dm-area-dc-label" style="font-size:12px;color:var(--teal2);font-weight:600"></span>
+    </div>
+    <!-- Desktop table -->
+    <div class="tbl-wrap">
+      <div class="tbl-inner">
+        <table class="tbl">
+          <thead><tr>
+            <th id="dm-area-th">พื้นที่</th>
+            <th onclick="dmAreaSortBy('dc')" style="text-align:left">DC ปลายทาง <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmAreaSortBy('total')" style="text-align:right">รวม <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmAreaSortBy('wait')" style="text-align:right">รอกระจาย <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmAreaSortBy('fail')" style="text-align:right">ส่งไม่ได้ <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmAreaSortBy('ret')" style="text-align:right">รอส่งกลับ <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th style="text-align:center">Heat</th>
+            <th style="text-align:center">ดูบิล</th>
+          </tr></thead>
+          <tbody id="dm-area-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Mobile cards -->
+    <div class="dm-mob-summary" id="dm-area-mob"></div>
+  </div>
+
+  <!-- VIEW: Bill list -->
+  <div id="dm-panel-bill" style="display:none">
+    <div id="dm-drill-label" style="font-size:12px;font-weight:700;color:var(--teal2);margin-bottom:8px"></div>
+    <div class="tbl-wrap">
+      <div class="tbl-inner">
+        <table class="tbl">
+          <thead><tr>
+            <th onclick="dmBillSortBy('เลขที่บิล')">เลขที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmBillSortBy('วันที่บิล')">วันที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th>ชื่อผู้รับ</th>
+            <th onclick="dmBillSortBy('ตำบล')">ตำบล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmBillSortBy('อำเภอ')">อำเภอ <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmBillSortBy('จังหวัด')">จังหวัด <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmBillSortBy('DC ปลายทาง')">DC ปลายทาง <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th>สถานะบิล</th>
+            <th style="text-align:center">ปัญหา</th>
+            <th onclick="dmBillSortBy('จำนวนวันคงค้างตามสถานะ')" style="text-align:right">วันคงค้าง <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="dmBillSortBy('กำหนดส่ง (SLA)')">กำหนดส่ง (SLA) <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+          </tr></thead>
+          <tbody id="dm-bill-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="pagination" id="dm-bill-pg"></div>
+  </div>
+  <div class="mob-cards" id="dm-mob-cards"></div>
+
+</div>
+
+<!-- TAB: เอกสารนำกลับ -->
+<div id="tab-returns" class="tab-panel">
+
+  <!-- Hero Banner -->
+  <div class="hero" style="margin-top:10px;background:linear-gradient(135deg,#163042 0%,#1e4d5e 55%,#26756e 100%)">
+    <div class="hero-row">
+      <div>
+        <div class="hero-label"><i class="fa-solid fa-file-arrow-left" style="margin-right:5px"></i>เอกสารนำกลับ — ค้างดำเนินการ</div>
+        <div class="hero-num" id="ret-hero-total">169</div>
+        <div class="hero-sub">บิลสถานะ 06 ที่เอกสารยังไม่นำกลับ</div>
+      </div>
+      <div class="hero-badges">
+        <div class="hbadge yellow"><i class="fa-solid fa-cubes"></i>&nbsp;สินค้าทั่วไป&nbsp;<span id="ret-badge-dry" style="font-weight:800">167</span></div>
+        <div class="hbadge" style="background:rgba(24,95,165,.3);border-color:rgba(24,95,165,.5)"><i class="fa-solid fa-snowflake"></i>&nbsp;Coldchain&nbsp;<span id="ret-badge-cold" style="font-weight:800">2</span></div>
+      </div>
+    </div>
+    <!-- Age distribution mini-cards -->
+    <div class="sum-row" style="margin-bottom:0">
+      <div class="sum-card s-total" id="ret-sum-all" onclick="setRetFilter('all',this)">
+        <div class="sum-icon"><i class="fa-solid fa-file-arrow-left"></i></div>
+        <div class="sum-num teal" id="ret-n-all">169</div>
+        <div class="sum-lbl">ทั้งหมด</div>
+        <div class="sum-sub">รอนำเอกสารกลับ</div>
+      </div>
+      <div class="sum-card s-ok" id="ret-sum-le3" onclick="setRetFilter('le3',this)">
+        <div class="sum-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="sum-num green" id="ret-n-le3">169</div>
+        <div class="sum-lbl">≤ 3 วัน</div>
+        <div class="sum-sub">อายุไม่เกิน 3 วัน</div>
+      </div>
+      <div class="sum-card s-risk" id="ret-sum-4to7" onclick="setRetFilter('4to7',this)">
+        <div class="sum-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <div class="sum-num yellow" id="ret-n-4to7">0</div>
+        <div class="sum-lbl">4 – 7 วัน</div>
+        <div class="sum-sub">เริ่มเสี่ยง</div>
+      </div>
+      <div class="sum-card s-crit" id="ret-sum-over7" onclick="setRetFilter('over7',this)">
+        <div class="sum-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="sum-num red" id="ret-n-over7">0</div>
+        <div class="sum-lbl">&gt; 7 วัน</div>
+        <div class="sum-sub">เร่งด่วน</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-row" style="margin-top:10px">
+    <select class="fsel" id="ret-f-type" onchange="renderReturns()">
+      <option value="">ประเภทสินค้าทั้งหมด</option>
+      <option value="สินค้าทั่วไป">สินค้าทั่วไป</option>
+      <option value="สินค้า Coldchain">สินค้า Coldchain</option>
+    </select>
+    <select class="fsel" id="ret-f-dc" onchange="renderReturns()">
+      <option value="">DC ปัจจุบันทั้งหมด</option>
+            <option value="150  DC เชียงใหม่">150  DC เชียงใหม่</option>
+      <option value="151  DC ลำพูน">151  DC ลำพูน</option>
+      <option value="152  DC ลำปาง">152  DC ลำปาง</option>
+      <option value="153  DC อุตรดิตถ์">153  DC อุตรดิตถ์</option>
+      <option value="155  DC น่าน">155  DC น่าน</option>
+      <option value="156  DC พะเยา">156  DC พะเยา</option>
+      <option value="159  DC ฝาง">159  DC ฝาง</option>
+      <option value="160  DC นครสวรรค์">160  DC นครสวรรค์</option>
+      <option value="163  DC ตาก">163  DC ตาก</option>
+      <option value="165  DC พิษณุโลก">165  DC พิษณุโลก</option>
+      <option value="167  DC เพชรบูรณ์">167  DC เพชรบูรณ์</option>
+      <option value="235  DC ยโสธร">235  DC ยโสธร</option>
+      <option value="236  DC ชัยภูมิ">236  DC ชัยภูมิ</option>
+      <option value="240  DC ขอนแก่น">240  DC ขอนแก่น</option>
+      <option value="241  DC อุดรธานี">241  DC อุดรธานี</option>
+      <option value="247  DC สกลนคร">247  DC สกลนคร</option>
+      <option value="248  DC นครพนม">248  DC นครพนม</option>
+      <option value="320  DC ชลบุรี">320  DC ชลบุรี</option>
+      <option value="321  DC ระยอง">321  DC ระยอง</option>
+      <option value="322  DC จันทบุรี">322  DC จันทบุรี</option>
+      <option value="325  DC ปราจีนบุรี">325  DC ปราจีนบุรี</option>
+      <option value="476  DC ชะอำ">476  DC ชะอำ</option>
+      <option value="483  DC ภูเก็ต">483  DC ภูเก็ต</option>
+      <option value="484  DC สุราษฎร์">484  DC สุราษฎร์</option>
+      <option value="487  DC กระบี่">487  DC กระบี่</option>
+      <option value="490  DC หาดใหญ่">490  DC หาดใหญ่</option>
+      <option value="615  DC ลพบุรี">615  DC ลพบุรี</option>
+      <option value="618  DC สระบุรี">618  DC สระบุรี</option>
+      <option value="621  DC รังสิต">621  DC รังสิต</option>
+      <option value="624  DC ฉะเชิงเทรา">624  DC ฉะเชิงเทรา</option>
+      <option value="670  DC ราชบุรี">670  DC ราชบุรี</option>
+      <option value="671  DC กาญจนบุรี">671  DC กาญจนบุรี</option>
+      <option value="672  DC สุพรรณบุรี">672  DC สุพรรณบุรี</option>
+      <option value="691  CDC บางนา">691  CDC บางนา</option>
+    </select>
+    <input class="fsearch" id="ret-f-search" placeholder="ค้นหาเลขที่บิล / ผู้ส่ง / ผู้รับ..." oninput="renderReturns()" style="display:block;flex:2;min-width:140px">
+    <span class="fcount" id="ret-f-count"></span>
+  </div>
+
+  <!-- Desktop table -->
+  <div class="tbl-wrap">
+    <div class="tbl-inner">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th onclick="sortRetBy('no')">เลขที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortRetBy('dateStr')">วันที่บิล <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+
+            <th onclick="sortRetBy('dcCurrent')">DC ปัจจุบัน <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortRetBy('dcDest')">DC ปลายทาง <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortRetBy('type')">ประเภท <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortRetBy('sla')">SLA <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+            <th onclick="sortRetBy('age')">อายุ (วัน) <i class="fa-solid fa-sort" style="font-size:9px;opacity:.4"></i></th>
+          </tr>
+        </thead>
+        <tbody id="ret-tbl-body"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="ret-pagination"></div>
+  </div>
+
+  <!-- Mobile cards -->
+  <div class="mob-cards" id="ret-mob-cards"></div>
+</div>
+
+<!-- TAB: Ranking -->
+<div id="tab-ranking" class="tab-panel">
+<div style="padding:4px 0 18px">
+
+  <!-- ── Page title ── -->
+  <div style="margin-bottom:14px">
+    <div style="font-size:15px;font-weight:800;color:var(--dark);display:flex;align-items:center;gap:7px">
+      <i class="fa-solid fa-ranking-star" style="color:var(--teal)"></i>Branch Ranking Dashboard
+    </div>
+    <div style="font-size:11px;color:var(--mid);margin-top:2px">จัดอันดับสาขาตามมิติต่างๆ — กรองตามหน่วยงานที่รับผิดชอบ เพื่อให้แต่ละทีมเห็นภาระของตนเองชัดเจน</div>
+  </div>
+
+  <!-- ── Toggle หน่วยงาน (Primary Filter) ── -->
+  <div class="seg-group" style="margin-bottom:14px">
+    <div class="seg-row">
+      <span class="seg-label"><i class="fa-solid fa-people-group" style="color:var(--teal);margin-right:4px"></i>หน่วยงาน</span>
+      <div class="seg-tabs" id="rk-seg-dept">
+        <button class="seg-btn active" data-dept="" onclick="setRkDept('',this)">
+          <i class="fa-solid fa-layer-group" style="font-size:10px;margin-right:3px"></i>รวมทั้งหมด
+        </button>
+        <button class="seg-btn" data-dept="สถานะบิลคงค้างขนย้าย" onclick="setRkDept('สถานะบิลคงค้างขนย้าย',this)">
+          <i class="fa-solid fa-truck-arrow-right" style="font-size:10px;margin-right:3px;color:#c85000"></i>ขนย้าย
+        </button>
+        <button class="seg-btn" data-dept="สถานะบิลคงค้างกระจาย" onclick="setRkDept('สถานะบิลคงค้างกระจาย',this)">
+          <i class="fa-solid fa-diagram-project" style="font-size:10px;margin-right:3px;color:#2b55b8"></i>กระจาย
+        </button>
+        <button class="seg-btn" data-dept="สถานะบิลคงค้างDC แผนกธุรการสาขา" onclick="setRkDept('สถานะบิลคงค้างDC แผนกธุรการสาขา',this)">
+          <i class="fa-solid fa-pen-to-square" style="font-size:10px;margin-right:3px;color:#6b2bb8"></i>ธุรการ
+        </button>
+      </div>
+    </div>
+    <!-- Row 2: Top N -->
+    <div class="seg-row">
+      <span class="seg-label"><i class="fa-solid fa-list-ol" style="color:var(--teal);margin-right:4px"></i>แสดง Top</span>
+      <div class="seg-tabs" id="rk-seg-topn">
+        <button class="seg-btn active" data-n="5" onclick="setRkN(5,this)">Top 5</button>
+        <button class="seg-btn" data-n="10" onclick="setRkN(10,this)">Top 10</button>
+        <button class="seg-btn" data-n="15" onclick="setRkN(15,this)">Top 15</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Active dept badge + summary strip ── -->
+  <div id="rk-dept-banner" style="display:none;margin-bottom:12px">
+    <div style="background:var(--teal-light);border:1.5px solid var(--teal-mid);border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span id="rk-dept-icon" style="font-size:13px"></span>
+      <span id="rk-dept-label" style="font-size:12.5px;font-weight:800;color:var(--teal2)"></span>
+      <span style="font-size:11px;color:var(--mid)">— แสดงเฉพาะบิลในความรับผิดชอบของหน่วยงานนี้</span>
+    </div>
+  </div>
+
+  <!-- 4-metric summary strip -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px" id="rk-meta-strip"></div>
+
+  <!-- ── CHART GRID 2-col ── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" class="rk-chart-grid">
+
+    <!-- วิกฤต -->
+    <div class="rk-card">
+      <div class="rk-card-hdr" style="border-left-color:#7a0000">
+        <span class="rk-card-ico" style="background:#fce8e8;color:#7a0000"><i class="fa-solid fa-bolt"></i></span>
+        <div><div class="rk-card-title">Top — วิกฤต</div><div class="rk-card-sub" id="rk-sub-crit">บิลระดับวิกฤต สูงสุด ต้องแก้ไขทันที</div></div>
+      </div>
+      <div class="rk-bars" id="rk-bars-crit"></div>
+    </div>
+
+    <!-- ต้องเร่ง -->
+    <div class="rk-card">
+      <div class="rk-card-hdr" style="border-left-color:var(--red)">
+        <span class="rk-card-ico" style="background:var(--red-light);color:var(--red)"><i class="fa-solid fa-triangle-exclamation"></i></span>
+        <div><div class="rk-card-title">Top — ต้องเร่งจัดการ</div><div class="rk-card-sub" id="rk-sub-urge">บิลระดับเร่งด่วน สะสมสูง ควรลงพื้นที่</div></div>
+      </div>
+      <div class="rk-bars" id="rk-bars-urge"></div>
+    </div>
+
+    <!-- Max Age -->
+    <div class="rk-card">
+      <div class="rk-card-hdr" style="border-left-color:#9b5de5">
+        <span class="rk-card-ico" style="background:#f3e8ff;color:#7c3aed"><i class="fa-solid fa-hourglass-half"></i></span>
+        <div><div class="rk-card-title">Top — อายุบิลสูงสุด</div><div class="rk-card-sub" id="rk-sub-age">บิลค้างนานที่สุดในสาขา</div></div>
+      </div>
+      <div class="rk-bars" id="rk-bars-age"></div>
+    </div>
+
+    <!-- Total -->
+    <div class="rk-card">
+      <div class="rk-card-hdr" style="border-left-color:var(--teal)">
+        <span class="rk-card-ico" style="background:var(--teal-light);color:var(--teal)"><i class="fa-solid fa-layer-group"></i></span>
+        <div><div class="rk-card-title">Top — บิลคงค้างรวม</div><div class="rk-card-sub" id="rk-sub-total">สาขาที่มีภาระงานรวมมากที่สุด</div></div>
+      </div>
+      <div class="rk-bars" id="rk-bars-total"></div>
+    </div>
+
+    <!-- Urgency Rate -->
+    <div class="rk-card">
+      <div class="rk-card-hdr" style="border-left-color:#f97316">
+        <span class="rk-card-ico" style="background:#fff7ed;color:#c2410c"><i class="fa-solid fa-fire-flame-curved"></i></span>
+        <div><div class="rk-card-title">Top — Urgency Rate (%)</div><div class="rk-card-sub" id="rk-sub-rate">% วิกฤต+เร่ง ต่อบิลรวมของสาขา (≥3 บิล)</div></div>
+      </div>
+      <div class="rk-bars" id="rk-bars-rate"></div>
+    </div>
+
+    <!-- เริ่มเสี่ยง -->
+    <div class="rk-card">
+      <div class="rk-card-hdr" style="border-left-color:var(--yellow)">
+        <span class="rk-card-ico" style="background:var(--yellow-light);color:#c47f00"><i class="fa-solid fa-circle-exclamation"></i></span>
+        <div><div class="rk-card-title">Top — เริ่มเสี่ยง</div><div class="rk-card-sub" id="rk-sub-warn">สะสมมาก ควรเฝ้าระวัง</div></div>
+      </div>
+      <div class="rk-bars" id="rk-bars-warn"></div>
+    </div>
+
+  </div>
+
+  <!-- ── Risk Heatmap full ── -->
+  <div class="rk-card" style="margin-top:12px">
+    <div class="rk-card-hdr" style="border-left-color:var(--teal)">
+      <span class="rk-card-ico" style="background:var(--teal-light);color:var(--teal)"><i class="fa-solid fa-table-cells"></i></span>
+      <div>
+        <div class="rk-card-title">Risk Heatmap — สรุปทุกสาขา</div>
+        <div class="rk-card-sub" id="rk-heat-sub">เรียงจากอันตรายสูงสุด ครอบคลุมทุกระดับความเสี่ยง</div>
+      </div>
+    </div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:4px">
+      <table id="rk-heat-tbl" style="width:100%;border-collapse:collapse;min-width:560px;font-size:12px"></table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- TAB: คู่มือการใช้งาน -->
+<div id="tab-guide" class="tab-panel">
+<div class="guide-wrap">
+
+  <!-- 1. ภาพรวม dashboard -->
+  <div class="guide-section" style="margin-top:10px">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-circle-info"></i>
+      <div class="guide-sec-title">ภาพรวม Dashboard นี้คืออะไร?</div>
+    </div>
+    <div class="guide-body">
+      <p class="guide-p">
+        Dashboard นี้ใช้ <b>ติดตามสถานะบิลขนส่งที่ค้างในระบบ</b> โดยดึงข้อมูลจากรายงาน NSS
+        เพื่อช่วยให้ทีมปฏิบัติการมองเห็นบิลที่มีความเสี่ยงได้รวดเร็ว และสามารถ <b>จัดลำดับการแก้ไขก่อน-หลัง</b> ได้อย่างมีประสิทธิภาพ
+      </p>
+      <p class="guide-p">
+        ระบบแยกการประเมินความเสี่ยงออกเป็น <b>2 กลุ่มสินค้า</b> ได้แก่ <b>สินค้าทั่วไป (AB)</b> และ <b>สินค้าคุมอุณหภูมิ (CC)</b>
+        เนื่องจากสินค้า CC มีข้อกำหนดด้านเวลาที่เข้มงวดกว่า เกณฑ์การประเมินจึงต่างกัน
+      </p>
+      <div class="guide-note"><i class="fa-solid fa-server"></i>ข้อมูลอัปเดตทุกครั้งที่ดึงรายงาน NSS — ตรวจสอบวันที่มุมขวาบนก่อนใช้งานทุกครั้ง</div>
+    </div>
+  </div>
+
+  <!-- 2. โครงสร้าง Tab -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-table-columns"></i>
+      <div class="guide-sec-title">โครงสร้างเมนูหลัก</div>
+    </div>
+    <div class="guide-body">
+      <div class="card-exp-grid">
+        <div class="card-exp" style="border-color:var(--teal-mid)">
+          <div class="card-exp-icon" style="background:var(--teal-light);color:var(--teal)"><i class="fa-solid fa-chart-pie"></i></div>
+          <div class="card-exp-name">ภาพรวม</div>
+          <div class="card-exp-desc">สรุปสถานะบิลทั้งหมดแยกตามกลุ่มสินค้า ระดับความเสี่ยง และประเภทปัญหา พร้อมกริด DC ทุกสาขา</div>
+        </div>
+        <div class="card-exp" style="border-color:#c0d0f5">
+          <div class="card-exp-icon" style="background:#e8f0ff;color:#2b55b8"><i class="fa-solid fa-table-list"></i></div>
+          <div class="card-exp-name">รายการบิล</div>
+          <div class="card-exp-desc">ตารางบิลทุกใบ กรองได้หลายมิติ — ประเภทสินค้า ประเภทปัญหา สถานะ DC อายุบิล และค้นหาเลขบิล</div>
+        </div>
+        <div class="card-exp" style="border-color:#d5c0f5">
+          <div class="card-exp-icon" style="background:#f0e8ff;color:#6b2bb8"><i class="fa-solid fa-circle-question"></i></div>
+          <div class="card-exp-name">คู่มือการใช้งาน</div>
+          <div class="card-exp-desc">หน้านี้ — อธิบายเงื่อนไข สัญลักษณ์ เกณฑ์ความเสี่ยง และวิธีใช้ filter ต่างๆ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. การ์ดสรุปภาพรวม -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-chart-simple"></i>
+      <div class="guide-sec-title">การ์ดสรุปภาพรวม (แถวบนสุด)</div>
+    </div>
+    <div class="guide-body">
+      <p class="guide-p">แถวการ์ด 4 ใบที่แสดงยอดรวมทั้งหมดแบบข้ามประเภทสินค้า — <b>คลิกการ์ดใดก็ได้เพื่อกรองตาราง</b></p>
+      <div class="card-exp-grid">
+        <div class="card-exp" style="border-top:3px solid var(--teal)">
+          <div class="card-exp-icon" style="background:var(--teal-light);color:var(--teal)"><i class="fa-solid fa-layer-group"></i></div>
+          <div class="card-exp-name">บิลทั้งหมด</div>
+          <div class="card-exp-desc">จำนวนบิลทั้งหมดในระบบหลังหักบิลซ้ำ คลิกเพื่อ reset filter กลับมาดูทุกบิล</div>
+        </div>
+        <div class="card-exp" style="border-top:3px solid var(--green)">
+          <div class="card-exp-icon" style="background:var(--green-light);color:var(--green)"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="card-exp-name">ปกติ</div>
+          <div class="card-exp-desc">บิลที่ยังอยู่ในเกณฑ์เวลาปกติ ยังไม่มีสัญญาณเสี่ยง</div>
+        </div>
+        <div class="card-exp" style="border-top:3px solid var(--yellow)">
+          <div class="card-exp-icon" style="background:var(--yellow-light);color:var(--yellow)"><i class="fa-solid fa-circle-exclamation"></i></div>
+          <div class="card-exp-name">เริ่มเสี่ยง</div>
+          <div class="card-exp-desc">บิลที่อายุเริ่มนานขึ้น ควรติดตามและเตรียมดำเนินการ</div>
+        </div>
+        <div class="card-exp" style="border-top:3px solid var(--red)">
+          <div class="card-exp-icon" style="background:var(--red-light);color:var(--red)"><i class="fa-solid fa-bolt"></i></div>
+          <div class="card-exp-name">ต้องเร่ง / วิกฤต</div>
+          <div class="card-exp-desc">บิลที่เกินเกณฑ์ — ต้องดำเนินการแก้ไขทันที มีผลต่อ KPI</div>
+        </div>
+      </div>
+      <div class="guide-note"><i class="fa-solid fa-circle-info"></i>ตัวเลขใต้การ์ดแสดงสัดส่วนแยก <b>สินค้า AB</b> และ <b>สินค้า CC</b> ในรูปแบบ <b>AB X · CC Y</b></div>
+    </div>
+  </div>
+
+  <!-- 4. บล็อกกลุ่มสินค้า -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-boxes-stacked"></i>
+      <div class="guide-sec-title">บล็อกกลุ่มสินค้า (สินค้า AB / สินค้า CC)</div>
+    </div>
+    <div class="guide-body">
+      <p class="guide-p">แต่ละบล็อกประกอบด้วย 2 แถว ที่ <b>คลิกกรองรายการบิลได้ทุกช่อง</b></p>
+      <div class="guide-divider"></div>
+      <p class="guide-p"><b>แถวบน — ระดับความเสี่ยง (4 ช่อง)</b></p>
+      <div class="badge-row">
+        <span class="b-ok"><i class="fa-solid fa-circle-check" style="font-size:9px"></i>ปกติ</span>
+        <span class="b-warn"><i class="fa-solid fa-circle-exclamation" style="font-size:9px"></i>เริ่มเสี่ยง</span>
+        <span class="b-urge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>ต้องเร่งจัดการ</span>
+        <span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>วิกฤต</span>
+      </div>
+      <div class="guide-divider"></div>
+      <p class="guide-p"><b>แถวล่าง — ประเภทปัญหา (3 ช่อง)</b></p>
+      <ul class="guide-steps">
+        <li>
+          <span class="step-num" style="background:#c85000"><i class="fa-solid fa-truck-arrow-right" style="font-size:9px"></i></span>
+          <div><b>คงค้างขนย้าย</b> — บิลยังอยู่ระหว่างการขนส่งจาก DC ต้นทางไปยัง DC ปลายทาง ยังไม่ถึงมือผู้รับ</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#2b55b8"><i class="fa-solid fa-diagram-project" style="font-size:9px"></i></span>
+          <div><b>คงค้างกระจาย</b> — บิลถึง DC ปลายทางแล้ว แต่ยังไม่ได้ส่งถึงผู้รับ หรืออยู่ระหว่างนัดส่งซ้ำ</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#6b2bb8"><i class="fa-solid fa-pen-to-square" style="font-size:9px"></i></span>
+          <div><b>ธุรการสาขา</b> — บิลที่เข้าสู่กระบวนการเคลียร์ เช่น รับเข้าเคลียร์, สินค้าขาด, ส่งไม่สำเร็จ จัดอยู่ใน "กลุ่ม Clear" แยกระดับความเสี่ยงตามอายุ — <b>ปกติ</b> (1–5 วัน), <b>ต้องเร่งจัดการ</b> (6–7 วัน), <b>วิกฤต</b> (8+ วัน)</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 5. เกณฑ์ความเสี่ยง -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <div class="guide-sec-title">เกณฑ์ระดับความเสี่ยงตามอายุบิล</div>
+      <span class="guide-sec-sub">อ้างอิง Sheet อายุบิล</span>
+    </div>
+    <div class="guide-body">
+      <p class="guide-p">ระบบประเมินความเสี่ยงจาก <b>จำนวนวันคงค้าง</b> โดยใช้เกณฑ์ที่แตกต่างกันตามประเภทสินค้าและประเภทปัญหา</p>
+
+      <p class="guide-p" style="margin-top:12px"><b><i class="fa-solid fa-cubes" style="color:#f0a500;margin-right:5px"></i>สินค้าทั่วไป (AB)</b></p>
+      <table class="risk-tbl">
+        <thead><tr>
+          <th>อายุบิล</th>
+          <th>คงค้างขนย้าย</th>
+          <th>คงค้างกระจาย</th>
+          <th>ธุรการสาขา</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="day-cell">1–5 วัน</td>
+            <td><span class="b-warn"><i class="fa-solid fa-circle-exclamation" style="font-size:9px"></i>เริ่มเสี่ยง (2–5)</span></td>
+            <td><span class="b-warn" style="white-space:nowrap"><i class="fa-solid fa-circle-exclamation" style="font-size:9px"></i>เริ่มเสี่ยง (3–5)</span></td>
+            <td><span class="b-clear"><i class="fa-solid fa-flag-checkered" style="font-size:9px"></i>Clear ปกติ</span></td>
+          </tr>
+          <tr><td class="day-cell">1 วัน (ขนย้าย/กระจาย)</td>
+            <td><span class="b-ok"><i class="fa-solid fa-circle-check" style="font-size:9px"></i>ปกติ</span></td>
+            <td><span class="b-ok"><i class="fa-solid fa-circle-check" style="font-size:9px"></i>ปกติ (1–2 วัน)</span></td>
+            <td>—</td>
+          </tr>
+          <tr><td class="day-cell">6–7 วัน</td>
+            <td><span class="b-urge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>ต้องเร่งจัดการ</span></td>
+            <td><span class="b-urge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>ต้องเร่งจัดการ</span></td>
+            <td><span class="b-urge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>Clear ต้องเร่งจัดการ</span></td>
+          </tr>
+          <tr><td class="day-cell">&gt; 7 วัน</td>
+            <td><span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>วิกฤต</span></td>
+            <td><span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>วิกฤต</span></td>
+            <td><span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>Clear วิกฤต</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="guide-p" style="margin-top:16px"><b><i class="fa-solid fa-snowflake" style="color:#185FA5;margin-right:5px"></i>สินค้าคุมอุณหภูมิ (CC) — เกณฑ์เข้มข้นกว่า</b></p>
+      <table class="risk-tbl">
+        <thead><tr>
+          <th>อายุบิล</th>
+          <th>คงค้างขนย้าย</th>
+          <th>คงค้างกระจาย</th>
+          <th>ธุรการสาขา</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="day-cell">1–5 วัน</td>
+            <td><span class="b-warn"><i class="fa-solid fa-circle-exclamation" style="font-size:9px"></i>เริ่มเสี่ยง (2–5)</span></td>
+            <td><span class="b-warn"><i class="fa-solid fa-circle-exclamation" style="font-size:9px"></i>เริ่มเสี่ยง (2–3)</span> <span class="b-urge" style="margin-left:4px"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>ต้องเร่ง (4–5)</span></td>
+            <td><span class="b-clear"><i class="fa-solid fa-flag-checkered" style="font-size:9px"></i>Clear ปกติ</span></td>
+          </tr>
+          <tr><td class="day-cell">1 วัน (ขนย้าย/กระจาย)</td>
+            <td><span class="b-ok"><i class="fa-solid fa-circle-check" style="font-size:9px"></i>ปกติ</span></td>
+            <td><span class="b-ok"><i class="fa-solid fa-circle-check" style="font-size:9px"></i>ปกติ</span></td>
+            <td>—</td>
+          </tr>
+          <tr><td class="day-cell">6–7 วัน</td>
+            <td><span class="b-urge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>ต้องเร่งจัดการ</span></td>
+            <td><span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>วิกฤต</span></td>
+            <td><span class="b-urge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>Clear ต้องเร่งจัดการ</span></td>
+          </tr>
+          <tr><td class="day-cell">&gt; 7 วัน</td>
+            <td><span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>วิกฤต</span></td>
+            <td><span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>วิกฤต</span></td>
+            <td><span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>Clear วิกฤต</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="guide-warn-note"><i class="fa-solid fa-circle-exclamation"></i><b>สินค้า CC ต้องระวังเป็นพิเศษ</b> — กลุ่มกระจายเข้าระดับ "ต้องเร่งจัดการ" ตั้งแต่วันที่ 4 และ "วิกฤต" ตั้งแต่วันที่ 6 เร็วกว่าสินค้าทั่วไป 2 วัน</div>
+    </div>
+  </div>
+
+  <!-- 6. สัญลักษณ์และ Badge -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-tags"></i>
+      <div class="guide-sec-title">สัญลักษณ์และป้ายกำกับ (Badge)</div>
+    </div>
+    <div class="guide-body">
+      <p class="guide-p"><b>ประเภทสินค้า</b></p>
+      <div class="badge-row">
+        <span class="b-dry"><i class="fa-solid fa-cubes" style="font-size:9px"></i>สินค้าทั่วไป (AB)</span>
+        <span class="b-cold"><i class="fa-solid fa-snowflake" style="font-size:9px"></i>สินค้าคุมอุณหภูมิ (CC)</span>
+      </div>
+      <div class="guide-divider"></div>
+      <p class="guide-p"><b>สถานะของ DC</b> — บอกว่าบิลนี้อยู่ที่ DC ไหน</p>
+      <div class="badge-row">
+        <span class="b-curr"><i class="fa-solid fa-warehouse" style="font-size:9px"></i>DC ปัจจุบัน</span>
+        <span>— บิลอยู่ที่ DC ที่กำลังดูแลบิลอยู่ในขณะนี้ (เป็น DC Focus)</span>
+      </div>
+      <div class="badge-row" style="margin-top:4px">
+        <span class="b-dest"><i class="fa-solid fa-location-arrow" style="font-size:9px"></i>DC ปลายทาง</span>
+        <span>— บิลถึง DC ปลายทางแล้ว อยู่ระหว่างรอกระจายหรือส่งมือผู้รับ</span>
+      </div>
+      <div class="guide-divider"></div>
+      <p class="guide-p"><b>ระดับความเสี่ยง</b> — แสดงในตารางรายการบิล คำนวณจากอายุบิล + ประเภทสินค้า + ประเภทปัญหา</p>
+      <div class="badge-row">
+        <span class="b-ok"><i class="fa-solid fa-circle-check" style="font-size:9px"></i>ปกติ</span>
+        <span class="b-warn"><i class="fa-solid fa-circle-exclamation" style="font-size:9px"></i>เริ่มเสี่ยง</span>
+        <span class="b-urge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px"></i>ต้องเร่งจัดการ</span>
+        <span class="b-crit"><i class="fa-solid fa-bolt" style="font-size:9px"></i>วิกฤต</span>
+        <span class="b-clear"><i class="fa-solid fa-flag-checkered" style="font-size:9px"></i>กลุ่ม Clear</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. กริด DC -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-location-dot"></i>
+      <div class="guide-sec-title">กริดสรุปปัญหาตาม DC</div>
+    </div>
+    <div class="guide-body">
+      <p class="guide-p">แสดงสถานะบิลรวมของแต่ละ DC Focus โดย <b>เรียงจากมีบิลความเสี่ยงสูงที่สุดก่อน</b></p>
+      <ul class="guide-steps">
+        <li>
+          <span class="step-num" style="background:#fca5a5;color:#7a0000">!</span>
+          <div><b>กรอบแดง</b> — DC มีบิลที่เกิน KPI อยู่ ต้องดำเนินการด่วน</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#fde68a;color:#854F0B">~</span>
+          <div><b>กรอบเหลือง</b> — DC มีบิลที่เริ่มช้า/เริ่มเสี่ยง ควรติดตาม</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:var(--green);"><i class="fa-solid fa-check" style="font-size:9px"></i></span>
+          <div><b>กรอบปกติ</b> — DC ไม่มีบิลที่มีปัญหา</div>
+        </li>
+      </ul>
+      <p class="guide-p" style="margin-top:8px">แต่ละ card แสดง <b>จำนวนบิลเกิน KPI / เริ่มช้า / ปกติ</b> พร้อมแถบย่อยแยก AB/CC ที่มีบิลต้องเร่ง และอายุบิลสูงสุดใน DC นั้น</p>
+      <div class="guide-note"><i class="fa-solid fa-hand-pointer"></i><b>คลิก DC card</b> ใดก็ได้ เพื่อกระโดดไปหน้า "รายการบิล" และกรองเฉพาะบิลของ DC นั้นทันที</div>
+    </div>
+  </div>
+
+  <!-- 8. วิธีใช้ filter -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-sliders"></i>
+      <div class="guide-sec-title">วิธีใช้ Filter และ Export ในหน้ารายการบิล</div>
+    </div>
+    <div class="guide-body">
+      <ul class="guide-steps">
+        <li>
+          <span class="step-num">1</span>
+          <div><b>แถบ "สินค้า"</b> — เลือกดูเฉพาะ <b>สินค้า AB</b> หรือ <b>สินค้า CC</b> หรือ "รวม" เพื่อดูทั้งหมด</div>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <div><b>แถบ "ประเภทปัญหา"</b> — กรองเฉพาะบิลในกลุ่ม คงค้างขนย้าย / คงค้างกระจาย / ธุรการสาขา</div>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <div><b>Dropdown "สถานะอายุ"</b> — กรองตามสถานะ KPI เดิม (เกิน KPI / เริ่มช้า / ปกติ) จากระบบ NSS</div>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <div><b>Dropdown "สถานะของ DC"</b> — เลือก DC ปัจจุบัน หรือ DC ปลายทาง</div>
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          <div><b>Dropdown "DC"</b> — กรองเฉพาะสาขาที่ต้องการดู</div>
+        </li>
+        <li>
+          <span class="step-num">6</span>
+          <div><b>ช่องค้นหา</b> — พิมพ์เลขบิลเพื่อค้นหาทันที รองรับการพิมพ์บางส่วน</div>
+        </li>
+        <li>
+          <span class="step-num">7</span>
+          <div><b>คลิกหัวตาราง</b> — เรียงข้อมูลตามคอลัมน์นั้นๆ คลิกซ้ำเพื่อสลับ มาก→น้อย / น้อย→มาก</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:var(--green)"><i class="fa-solid fa-file-excel" style="font-size:9px"></i></span>
+          <div><b>ปุ่ม Export Excel</b> — อยู่มุมขวาของแถบ filter กดเพื่อดาวน์โหลดรายการบิล<b>ที่กรองอยู่ในขณะนั้น</b>เป็นไฟล์ .xlsx ทันที ชื่อไฟล์จะมีวันที่ refDate อัตโนมัติ ข้อมูลที่ได้ครบทุกคอลัมน์ (เลขบิล, วันที่, DC, สถานะ, ประเภทสินค้า, SLA, อายุบิล, ระดับความเสี่ยง, ประเภทปัญหา)</div>
+        </li>
+      </ul>
+      <div class="guide-note"><i class="fa-solid fa-circle-info"></i>Filter หน้าภาพรวมและหน้ารายการบิลทำงาน <b>แยกกัน</b> — การคลิกการ์ดหรือบล็อกในหน้าภาพรวมจะพาไปหน้ารายการบิลพร้อม filter ที่ตั้งไว้โดยอัตโนมัติ</div>
+    </div>
+  </div>
+
+  <!-- 9. คำถามที่พบบ่อย -->
+  <div class="guide-section">
+    <div class="guide-sec-hdr">
+      <i class="fa-solid fa-circle-question"></i>
+      <div class="guide-sec-title">คำถามที่พบบ่อย</div>
+    </div>
+    <div class="guide-body">
+      <ul class="guide-steps">
+        <li>
+          <span class="step-num" style="background:var(--mid)">Q</span>
+          <div><b>ยอดบิลรวมน้อยกว่า NSS?</b><br>ระบบตัดบิลซ้ำออกโดยอัตโนมัติ (กรณี NSS ส่งข้อมูล 2 แถวต่อบิล) จึงแสดงเฉพาะบิลที่ไม่ซ้ำ</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:var(--mid)">Q</span>
+          <div><b>ทำไมบิลเดียวกันมี ระดับความเสี่ยง ต่างจาก สถานะอายุ?</b><br>"สถานะอายุ" มาจาก NSS โดยตรง ส่วน "ระดับความเสี่ยง" คำนวณใหม่ในระบบนี้โดยแยกตาม <b>ประเภทสินค้า + ประเภทปัญหา</b> ตาม Sheet อายุบิล ซึ่งเข้มงวดกว่า</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:var(--mid)">Q</span>
+          <div><b>กลุ่ม Clear คืออะไร?</b><br>บิลในกลุ่มธุรการสาขา เช่น รับเข้าเคลียร์, สินค้าขาด จะถูกจัดเป็น "กลุ่ม Clear" ซึ่ง<b>แยกระดับความเสี่ยงตามอายุบิล</b> — <b>ปกติ</b> (1–5 วัน), <b>ต้องเร่งจัดการ</b> (6–7 วัน), <b>วิกฤต</b> (8+ วัน) โดยไม่แยกประเภทสินค้า AB/CC</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:var(--mid)">Q</span>
+          <div><b>อายุ 0 วัน คืออะไร?</b><br>บิลที่รับเข้า DC ในวันเดียวกับวันที่ดึงรายงาน ยังอยู่ในกระบวนการจัดเตรียม ยังไม่เริ่มนับเวลาเสี่ยง</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:var(--mid)">Q</span>
+          <div><b>อายุบิลคำนวณยังไง?</b><br>ระบบคำนวณอายุบิลจาก <b>วันที่บิล</b> เทียบกับ <b>วันปัจจุบัน (refDate)</b> ที่แสดงมุมขวาบน ไม่ใช่จากวันที่รับเข้า DC — ดังนั้นถ้าดึงรายงานคนละวัน อายุบิลจะต่างกัน</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:var(--mid)">Q</span>
+          <div><b>Export Excel ได้ข้อมูลอะไรบ้าง?</b><br>ได้เฉพาะบิลที่ <b>กรองอยู่ตอนนั้น</b> ไม่ใช่ทุกบิล ถ้าต้องการทั้งหมดให้ reset filter ก่อนกด Export คอลัมน์ที่ได้: เลขที่บิล, วันที่บิล, DC โฟกัส, DC ปลายทาง, DC ปัจจุบัน, สถานะของ DC, สถานะบิล, ประเภทสินค้า, SLA, อายุบิล, สถานะอายุ, ระดับความเสี่ยง, ประเภทปัญหา</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</div><!-- /tab-guide -->
+
+
+
+
+
+
+
+
+
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
